@@ -1,0 +1,26 @@
+<launch>
+
+
+    <!-- Set Gazebo Parameters-->
+    <param name="velodyne_points" value="true" />
+
+    <!-- Launch Gem Gazebo-->
+    <include file="$(find gem_gazebo)/launch/gem_gazebo_rviz.launch"/>
+
+    <!-- Run world to base_footprint transform-->
+    <node name="tf_publisher_world_to_base_footprint" pkg="path_tracking" type="tf_publisher.py"/>
+
+    <!-- Set the controller type as a parameter -->
+    <param name="controller_type" value="PURE_PURSUIT" />
+
+    <!-- Set other parameters -->
+    <param name="lookahead_distance" value="1.0" />
+    <param name="vehicle_speed" value="1.0" />
+    <param name="wheelbase" value="1.5" />
+
+    <!-- Launch the Path Tracking Node -->
+    <node name="path_tracking_node" pkg="path_tracking" type="path_tracking_node" output="screen">
+        <!-- <remap from="/gps_path" to="/path" /> -->
+    </node>
+
+</launch>

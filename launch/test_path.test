@@ -1,0 +1,5 @@
+<launch>
+  <node name="my_rosout" pkg="rosout" type="rosout" />
+  <node pkg="path_tracking" type="path_tracking_node" name="path_tracking_node" output="screen" />
+  <test test-name="path_tracking_test" pkg="path_tracking" type="path_tracking_test" />
+</launch>
