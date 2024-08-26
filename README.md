@@ -18,14 +18,15 @@ This repository contains the implementation of a path tracking system using the 
 
 ## Controllers Background
 
-### Pure Pursuit Controller
+### Pure Pursuit Controller 
 
 The Pure Pursuit algorithm is a popular path-tracking method for vehicles with Ackermann steering (like cars). It is designed to steer the vehicle towards a target point, known as the lookahead point, on a given path. The algorithm calculates the curvature of this arc to determine the appropriate steering angle using the following equation:-
 
-                                    ![Pure Pursuit Equation](docs/PurePursuit_Eqn.png)
+                                    ![Pure Pursuit Equation](https://github.com/Gowresh7/path_tracking/tree/main/docs/PurePursuit_Eqn.png)
 Where:
     δ is the steering angle of the vehicle.
     L is the wheelbase of the vehicle (the distance between the front and rear axles).
     y is the lateral offset of the lookahead point in the vehicle's coordinate frame.
     d is the distance between the vehicle and the lookahead point.
 
+## System Architecture
