@@ -25,10 +25,15 @@ The Pure Pursuit algorithm is a popular path-tracking method for vehicles with A
 ![Pure Pursuit Equation](https://raw.githubusercontent.com/Gowresh7/path_tracking/main/docs/PurePursuit_Eqn.png)
 
 Where:
+
     δ is the steering angle of the vehicle.
+
     L is the wheelbase of the vehicle (the distance between the front and rear axles).
+
     y is the lateral offset of the lookahead point in the vehicle's coordinate frame.
+
     d is the distance between the vehicle and the lookahead point.
+
 
 ## System Architecture
 
@@ -36,3 +41,11 @@ Where:
 
 The path tracking system is built around three main components:
 
+#### PathTrackingController Base Class: 
+An abstract base class that defines the interface for any path-tracking controller.
+
+#### PurePursuitController Derived Class: 
+A specific implementation of the path-tracking controller using the Pure Pursuit algorithm.
+
+#### PathTrackingNode Class: 
+The main ROS node that handles subscribing to necessary topics, publishing control commands, and managing the state of the robot.
