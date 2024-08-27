@@ -85,33 +85,20 @@ The system is designed to interact with the robot and environment through ROS to
 
 #### Subscribed Topics:
 
-##### */gps_path*: 
-Input Path of type **nav_msgs::Path** in 'world' frame for the robot to follow.
-
-##### */gem/base_footprint/odom*: 
-Odometry data given by the gazebo simulator in 'world' frame.
+***/gps_path***: Input Path of type **nav_msgs::Path** in 'world' frame for the robot to follow.
+***/gem/base_footprint/odom***: Odometry data given by the gazebo simulator in 'world' frame.
 
 #### Published Topics:
 
-##### */gem/ackermann_cmd*:
-Control data of type **ackermann_msgs::AckermannDrive** to send speed and steering angle to the robot
-
-##### */state_marker*:
-Visualization marker of type **visualization_msgs::Marker** to showcase the robot's current state
+***/gem/ackermann_cmd***: Control data of type **ackermann_msgs::AckermannDrive** to send speed and steering angle to the robot
+***/state_marker***: Visualization marker of type **visualization_msgs::Marker** to showcase the robot's current state
 
 #### Params:
 
-**lookahead_distance:**
-Determines how far ahead the robot looks on the path to calculate the steering angle. Default is 6.0 meters.
-
-**vehicle_speed:** 
-The speed at which the robot should travel while tracking the path. Default is 2.8 meters/second
-
-**wheelbase:** 
-The distance between the front and rear axles of the robot. Default is 1.75 meters.
-
-**controller_type:**
-Specifies the type of controller to use. Currently defaults to "PURE_PURSUIT".
+***lookahead_distance:***Determines how far ahead the robot looks on the path to calculate the steering angle. Default is 6.0 meters.
+***vehicle_speed:*** The speed at which the robot should travel while tracking the path. Default is 2.8 meters/second
+***wheelbase:*** The distance between the front and rear axles of the robot. Default is 1.75 meters.
+***controller_type:***Specifies the type of controller to use. Currently defaults to "PURE_PURSUIT".
 
 
 
@@ -119,7 +106,7 @@ Specifies the type of controller to use. Currently defaults to "PURE_PURSUIT".
 
 ### Pure Pursuit Algorithm
 
-For the initial implementation, Pure Pursuit Algorithm was chosen for its relatively simple algorithm, which calculates the steeirng angle based on a lookahead point on the input path. 
+For the initial implementation, Pure Pursuit Algorithm was chosen for its relatively simple algorithm, which calculates the steering angle based on a lookahead point on the input path. 
 
 ### Modular Design
 
