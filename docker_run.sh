@@ -14,6 +14,4 @@ docker run -it \
   gazebo \
   bash -c "source /opt/ros/noetic/setup.bash && \
            source ~/gem_ws/devel/setup.bash && \
-           roslaunch path_tracking path_tracking_sim.launch & \
-           sleep 20 && \
-           rosrun path_tracking path_publisher.py"
+           roslaunch path_tracking path_tracking_sim.launch"
