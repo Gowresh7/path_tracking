@@ -102,6 +102,7 @@ public:
     ros::Subscriber path_sub_;
     ros::Subscriber odom_sub_;
     ros::Publisher cmd_vel_pub_;
+    ros::Publisher trajectory_pub_; 
     ros::Publisher state_marker_pub_;
     nav_msgs::Path path_;
     nav_msgs::Odometry odom_;
@@ -124,12 +125,40 @@ public:
         return distance_to_goal < goal_tolerance;  // Goal is considered reached if within the tolerance
     }
 
+    nav_msgs::Path generatePredictedTrajectory(const ackermann_msgs::AckermannDrive& cmd_vel) {
+        nav_msgs::Path predicted_path;
+        predicted_path.header.frame_id = "world";
+        predicted_path.header.stamp = ros::Time::now();
+
+        geometry_msgs::PoseStamped predicted_pose = current_pose_;
+
+        double dt = 0.1;  // time step for prediction
+        double total_time = 2.0;  // predict 2 seconds into the future
+
+        for (double t = 0; t < total_time; t += dt) {
+            double yaw = tf::getYaw(predicted_pose.pose.orientation);
+
+            // Update the pose based on the current steering angle and speed
+            predicted_pose.pose.position.x += cmd_vel.speed * dt * cos(yaw);
+            predicted_pose.pose.position.y += cmd_vel.speed * dt * sin(yaw);
+            yaw += (cmd_vel.speed / wheelbase_) * tan(cmd_vel.steering_angle) * dt;
+
+            predicted_pose.pose.orientation = tf::createQuaternionMsgFromYaw(yaw);
+
+            predicted_path.poses.push_back(predicted_pose);
+        }
+
+        return predicted_path;
+    }
+
+
     PathTrackingNode() : current_state_(State::IDLE) {
         
         path_sub_ = nh_.subscribe("/gps_path", 10, &PathTrackingNode::pathCallback, this);
         odom_sub_ = nh_.subscribe("/gem/base_footprint/odom", 10, &PathTrackingNode::odomCallback, this);
         cmd_vel_pub_ = nh_.advertise<ackermann_msgs::AckermannDrive>("/gem/ackermann_cmd", 10);
         state_marker_pub_ = nh_.advertise<visualization_msgs::Marker>("state_marker", 1);
+        trajectory_pub_ = nh_.advertise<nav_msgs::Path>("controller_trajectory", 1);
 
         nh_.param("lookahead_distance", lookahead_distance_, 6.0);  // default value 1.0
         nh_.param("vehicle_speed", vehicle_speed_, 2.8);            // default value 1.0
@@ -181,7 +210,7 @@ public:
 
         ros::Time current_time;
         ros::Duration duration;
-
+        nav_msgs::Path predicted_trajectory;
 
         visualization_msgs::Marker marker;
         marker.header.frame_id = "base_footprint"; 
@@ -216,6 +245,11 @@ public:
                 //ROS_INFO("ROBOT IS FOLLOWING PATH");
                 controller_->computeControl(odom_, cmd_vel_msg, path_, current_pose_,lookahead_distance_, wheelbase_, vehicle_speed_);
                 cmd_vel_pub_.publish(cmd_vel_msg);
+
+                // Generate and publish the predicted trajectory
+                predicted_trajectory = generatePredictedTrajectory(cmd_vel_msg);
+                trajectory_pub_.publish(predicted_trajectory);
+
                 // Check if the goal is reached or if an error occurs
                 if (isGoalReached(current_pose_)) {
                         ROS_INFO("Goal_Reached");
