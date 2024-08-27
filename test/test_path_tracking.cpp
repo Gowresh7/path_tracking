@@ -30,6 +30,7 @@ protected:
         last_cmd_vel_ = *cmd_vel_msg;
     }
 
+    //Function to create path points for the etst cases
     nav_msgs::Path createSimplePath() {
         nav_msgs::Path path;
         geometry_msgs::PoseStamped pose;
@@ -44,6 +45,7 @@ protected:
         return path;
     }
 
+    //Function to create desired current pose of the robot
     nav_msgs::Odometry createOdom(double x, double y, double yaw) {
         nav_msgs::Odometry odom;
         odom.header.seq = 1;
@@ -56,22 +58,7 @@ protected:
     }
 };
 
-TEST_F(PathTrackingNodeTest, TestIdleState) {
-    EXPECT_EQ(path_tracking_node_.current_state_, State::IDLE);
-
-    // Publish a path and verify state transition
-    nav_msgs::Path path = createSimplePath();
-    path_pub_.publish(path);
-    ros::Duration(1.0).sleep();
-    path_pub_.publish(path);
-    ros::spinOnce();
-    ros::Duration(1.0).sleep();  // Allow time for the callback to be processed
-
-    EXPECT_EQ(path_tracking_node_.current_state_, State::TRACKING);
-}
-
-
-
+//Testing the transition from IDLE to TRACKING
 
 TEST_F(PathTrackingNodeTest, TestTrackingState) {
     // Publish path and odom data, then verify controller output
@@ -104,10 +91,10 @@ TEST_F(PathTrackingNodeTest, TestTrackingState) {
     
     // Check that the controller output is published
     EXPECT_EQ(path_tracking_node_.current_state_, State::TRACKING);
-    //EXPECT_NEAR(last_cmd_vel_.speed, path_tracking_node_.vehicle_speed_, 1e-3);
-    //EXPECT_NEAR(last_cmd_vel_.steering_angle, 0.0, 1e-3);
+
 }
 
+//Testing transition from TRACKING to GOAL_REACHED
 TEST_F(PathTrackingNodeTest, TestGoalReachedState) {
     
     path_tracking_node_.current_state_= State::TRACKING;
@@ -128,6 +115,7 @@ TEST_F(PathTrackingNodeTest, TestGoalReachedState) {
 
 }
 
+//Testing the transition from IDLE to Error state for an empty path
 TEST_F(PathTrackingNodeTest, TestErrorState) {
     // Publish a path and set the odometry close to the goal
     
@@ -153,6 +141,8 @@ TEST_F(PathTrackingNodeTest, TestErrorState) {
     //EXPECT_NEAR(last_cmd_vel_.steering_angle, 0.0, 1e-3);
 }
 
+
+//Testing if steering angle is close to zero if the lookahed point is exactly in the front
 TEST_F(PathTrackingNodeTest, TestSteeringAngleStraight) {
    
     geometry_msgs::PoseStamped current_pose;
@@ -175,6 +165,7 @@ TEST_F(PathTrackingNodeTest, TestSteeringAngleStraight) {
 }
 
 
+//Testing if steering angle is maximum permissible value for a curved path
 TEST_F(PathTrackingNodeTest, TestSteeringTurn) {
 
     geometry_msgs::PoseStamped current_pose;
@@ -197,6 +188,7 @@ TEST_F(PathTrackingNodeTest, TestSteeringTurn) {
     EXPECT_LE(steering_angle, 0.61);
 }
 
+//Testing if correct lookahead points are identified for a curved path
 TEST_F(PathTrackingNodeTest, TestSteeringCurve) {
 
     double lookahead_distance = 20.0;
@@ -224,6 +216,7 @@ TEST_F(PathTrackingNodeTest, TestSteeringCurve) {
     EXPECT_EQ(lookahead_point.pose.position.y, 5.0);
 }
 
+//Testing for correct lookahead point in a straight line
 TEST_F(PathTrackingNodeTest, TestLookAhead) {
     nav_msgs::Path path;
     geometry_msgs::PoseStamped pose;
@@ -238,6 +231,8 @@ TEST_F(PathTrackingNodeTest, TestLookAhead) {
     EXPECT_EQ(lookahead_point.pose.position.y, 0.0);
 }
 
+
+//Testing for goal reached function
 TEST_F(PathTrackingNodeTest, TestIsGoalReached) {
     
     geometry_msgs::PoseStamped current_pose;
@@ -255,6 +250,8 @@ TEST_F(PathTrackingNodeTest, TestIsGoalReached) {
    
 }
 
+
+//Testing whether ackermann commands are published in IDLE state
 TEST_F(PathTrackingNodeTest, TestIdleControls) {
 
     path_tracking_node_.current_state_ = State::IDLE;
