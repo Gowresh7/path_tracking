@@ -189,9 +189,9 @@ public:
         trajectory_pub_ = nh_.advertise<nav_msgs::Path>("controller_trajectory", 1);
 
         //Initialise the ros params
-        nh_.param("lookahead_distance", lookahead_distance_, 6.0);  // default value 1.0
-        nh_.param("vehicle_speed", vehicle_speed_, 2.8);            // default value 1.0
-        nh_.param("wheelbase", wheelbase_, 1.75); 
+        nh_.param("lookahead_distance", lookahead_distance_, 6.0);  // default value 6.0
+        nh_.param("vehicle_speed", vehicle_speed_, 2.8);            // default value 2.8
+        nh_.param("wheelbase", wheelbase_, 1.75);                   // default value 1.75
         nh_.param("goal_tolerance", goal_tolerance, 6.0);
         nh_.param("controller_type", controller_type_str, std::string("PURE_PURSUIT"));
 
