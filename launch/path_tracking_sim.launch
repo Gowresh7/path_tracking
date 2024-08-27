@@ -14,9 +14,9 @@
     <param name="controller_type" value="PURE_PURSUIT" />
 
     <!-- Set other parameters -->
-    <param name="lookahead_distance" value="1.0" />
-    <param name="vehicle_speed" value="1.0" />
-    <param name="wheelbase" value="1.5" />
+    <param name="lookahead_distance" value="6.0" />
+    <param name="vehicle_speed" value="2.8" />
+    <param name="wheelbase" value="1.75" />
 
     <!-- Launch the Path Tracking Node -->
     <node name="path_tracking_node" pkg="path_tracking" type="path_tracking_node" output="screen">

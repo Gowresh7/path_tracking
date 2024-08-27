@@ -1,7 +1,12 @@
 FROM osrf/ros:noetic-desktop-full
 
+
+
+
 # Install Gazebo and other necessary packages
 RUN apt-get update && apt-get install -y \
+    mesa-utils \
+    build-essential gdb \
     gazebo11 \
     ros-noetic-gazebo-ros-pkgs \
     ros-noetic-gazebo-ros-control \
@@ -19,6 +24,19 @@ RUN apt-get update && apt-get install -y \
     ros-noetic-ros-controllers \
     ros-noetic-velodyne-simulator && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# nvidia-docker hooks
+LABEL com.nvidia.volumes.needed="nvidia_driver"
+ENV PATH /usr/local/nvidia/bin:${PATH}
+ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64:${LD_LIBRARY_PATH}
+
+
+# nvidia-container-runtime (nvidia-docker2)
+ENV NVIDIA_VISIBLE_DEVICES \
+   ${NVIDIA_VISIBLE_DEVICES:-all}
+ENV NVIDIA_DRIVER_CAPABILITIES \
+   ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
+
 
 # Create a non-root user with sudo privileges
 RUN useradd -ms /bin/bash rosuser && echo "rosuser:a" | chpasswd && \
