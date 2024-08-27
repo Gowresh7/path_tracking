@@ -7,8 +7,9 @@ RUN apt-get update && apt-get install -y \
     ros-noetic-gazebo-ros-control \
     nano \
     git \
-    python\
-    python3\
+    python3 \
+    python-yaml \
+    python-is-python3 \
     ros-noetic-ackermann-msgs \
     ros-noetic-geometry2 \
     ros-noetic-hector-gazebo \
@@ -31,7 +32,7 @@ WORKDIR /home/rosuser/gem_ws
 # Set up the workspace and clone the repository
 RUN mkdir -p ~/gem_ws/src && \
     cd ~/gem_ws/src && \
-    git clone https://github.com/GEM-Illinois/POLARIS_GEM_e2.git && \
+    git clone https://github.com/Gowresh7/POLARIS_GEM_e2.git && \
     git clone https://github.com/Gowresh7/path_tracking.git
 
 # Build the workspace
