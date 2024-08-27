@@ -1,0 +1,19 @@
+version: '3.3'
+
+services:
+  gazebo:
+    image: gazebo   # ROS-Gazebo Docker image
+    container_name: gazebo_container
+    environment:
+      - DISPLAY=${DISPLAY}       # Pass the DISPLAY variable from the host
+      - QT_X11_NO_MITSHM=1       # Prevent MIT-SHM error in X11
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw   # Mount X11 socket
+      - /dev/dri:/dev/dri                  # Allow access to GPU for rendering
+    devices:
+      - /dev/dri:/dev/dri                  # Ensure GPU access
+    network_mode: host                    # Use the host network to share the display
+    privileged: true                      # Necessary to allow the container to access the display and devices
+    entrypoint: /ros_entrypoint.sh
+    command: roslaunch gem_gazebo gem_gazebo_rviz.launch velodyne_points:="true"
+
