@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   gazebo:
-    image: gazebo   # ROS-Gazebo Docker image
+    image: gazebo  # Replace with your actual ROS-Gazebo Docker image
     container_name: gazebo_container
     environment:
       - DISPLAY=${DISPLAY}       # Pass the DISPLAY variable from the host
@@ -14,6 +14,11 @@ services:
       - /dev/dri:/dev/dri                  # Ensure GPU access
     network_mode: host                    # Use the host network to share the display
     privileged: true                      # Necessary to allow the container to access the display and devices
+    #runtime: nvidia  # Specify NVIDIA runtime (note: this may need to be set with a `docker run` command or configured in Docker daemon)
     entrypoint: /ros_entrypoint.sh
-    command: roslaunch gem_gazebo gem_gazebo_rviz.launch velodyne_points:="true"
-
+    command: >
+      bash -c "roslaunch path_tracking path_tracking_sim.launch &&
+      sleep 20 &&
+      rosrun path_tracking path_publisher.py"
+    tty: true
+    stdin_open: true
