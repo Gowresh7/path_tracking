@@ -111,6 +111,7 @@ public:
     double lookahead_distance_;
     double vehicle_speed_;
     double wheelbase_;
+    double goal_tolerance;
     std::string controller_type_str;
 
     bool isGoalReached(const geometry_msgs::PoseStamped &current_pose)
@@ -120,7 +121,7 @@ public:
         double dy = path_.poses.back().pose.position.y - current_pose.pose.position.y;
         double distance_to_goal = std::sqrt(dx * dx + dy * dy);
 
-        return distance_to_goal < 6.0;  // Goal is considered reached if within lookahead distance
+        return distance_to_goal < goal_tolerance;  // Goal is considered reached if within the tolerance
     }
 
     PathTrackingNode() : current_state_(State::IDLE) {
@@ -133,6 +134,7 @@ public:
         nh_.param("lookahead_distance", lookahead_distance_, 6.0);  // default value 1.0
         nh_.param("vehicle_speed", vehicle_speed_, 2.8);            // default value 1.0
         nh_.param("wheelbase", wheelbase_, 1.75); 
+        nh_.param("goal_tolerance", goal_tolerance, 6.0);
         nh_.param("controller_type", controller_type_str, std::string("PURE_PURSUIT"));
 
         
