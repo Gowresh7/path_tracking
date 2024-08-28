@@ -4,7 +4,7 @@
 This repository contains the implementation of a path tracking system using the following algorithm in ROS:
 - Pure Pursuit Control
 
-![Pure Pursuit Controller](https://raw.githubusercontent.com/Gowresh7/path_tracking/main/docs/PathTracking.gif)
+    ![Pure Pursuit Controller](https://raw.githubusercontent.com/Gowresh7/path_tracking/main/docs/PathTracking.gif)
 
 ## Limitations
 - The current implementation does not accommodate reverse motions.
