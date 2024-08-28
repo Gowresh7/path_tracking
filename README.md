@@ -5,8 +5,15 @@
 This repository contains the implementation of a path tracking system using the following algorithms in ROS:-
 - Pure Pursuit Control
 
+
+## Limitations
+- The current implementation does not accomodate reverse motions
+- Sharp turns and U-turns requires tuning of the parameters lookahead distance and speed. This will be taken into account while adding lane centering
+- Steering is restricted between a certain range to prevent circular movements
+
 ## Table of Contents
 - [Overview](#overview)
+- [Limitations](#limitations)
 - [Requirements](#dependencies)
 - [Setup](#dependencies)
 - [ToDo List](#todo-list)
@@ -35,7 +42,7 @@ $ roslaunch path_tracking path_tracking_sim.launch
 - [x] Implement Pure Pursuit Controller
 - [x] Implement State Machines
 - [x] Visualize States as markers
-- [ ] Visualize Path Trajectory taken by vehicle
+- [x] Visualize Path Trajectory taken by vehicle
 - [ ] Implement Lane Centering
 - [ ] Implement Stanley Controller
 - [ ] Implement MPC
@@ -61,7 +68,6 @@ Where:
     y is the lateral offset of the lookahead point in the vehicle's coordinate frame.
 
     d is the distance between the vehicle and the lookahead point.
-
 
 
 ## System Architecture
