@@ -80,6 +80,9 @@ Where:
         - The main ROS node that handles subscribing to necessary topics, publishing control commands, and managing the state of the robot.
 
 ### ROS Topics & Params
+
+-![ROS Node Graph](https://raw.githubusercontent.com/Gowresh7/path_tracking/main/docs/rosgraph.png)
+
 - The system is designed to interact with the robot and environment through ROS topics:
 
     - #### Subscribed Topics:
@@ -96,8 +99,6 @@ Where:
         - **vehicle_speed**: The speed at which the robot should travel while tracking the path. Default is 2.8 meters/second.
         - **wheelbase**: The distance between the front and rear axles of the robot. Default is 1.75 meters.
         - **controller_type**: Specifies the type of controller to use. Currently defaults to "PURE_PURSUIT".
-
-        ![ROS Node Graph](https://raw.githubusercontent.com/Gowresh7/path_tracking/main/docs/rosgraph.png)
 
 
 ## Design Choices
