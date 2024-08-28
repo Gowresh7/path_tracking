@@ -51,7 +51,8 @@ WORKDIR /home/rosuser/gem_ws
 RUN mkdir -p ~/gem_ws/src && \
     cd ~/gem_ws/src && \
     git clone https://github.com/Gowresh7/POLARIS_GEM_e2.git && \
-    git clone https://github.com/Gowresh7/path_tracking.git
+    git clone https://github.com/Gowresh7/path_tracking.git && \
+    git clone https://github.com/MoriKen254/timed_roslaunch.git
 
 # Build the workspace
 RUN bash -c "source /opt/ros/noetic/setup.bash && catkin_make"
