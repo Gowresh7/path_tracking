@@ -89,12 +89,16 @@ Where:
     - #### Published Topics:
         - **/gem/ackermann_cmd**: Control data of type **ackermann_msgs::AckermannDrive** to send speed and steering angle to the robot.
         - **/state_marker**: Visualization marker of type **visualization_msgs::Marker** to showcase the robot's current state.
+        - **/controller_trajectory**: Path message of type **nav_msgs::Path** to visualize the vehicle trajectory.
 
     - #### Params:
         - **lookahead_distance**: Determines how far ahead the robot looks on the path to calculate the steering angle. Default is 6.0 meters.
         - **vehicle_speed**: The speed at which the robot should travel while tracking the path. Default is 2.8 meters/second.
         - **wheelbase**: The distance between the front and rear axles of the robot. Default is 1.75 meters.
         - **controller_type**: Specifies the type of controller to use. Currently defaults to "PURE_PURSUIT".
+
+        ![ROS Node Graph](https://raw.githubusercontent.com/Gowresh7/path_tracking/main/docs/rosgraph.png)
+
 
 ## Design Choices
 
