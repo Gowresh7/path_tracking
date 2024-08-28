@@ -2,6 +2,7 @@
 
 import rospy
 import csv
+import sys
 from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseStamped
 import rospkg
@@ -15,10 +16,10 @@ def read_csv(file_path):
             if len(row) >= 2:  # Ensure there are at least x and y coordinates
                 x = float(row[0])
                 y = float(row[1])
-                z = float(row[2]) if len(row) > 2 else 0.0
-                waypoints.append((x, y, z))
-                if (i>=4000):
-                	break
+                #z = float(row[2]) if len(row) > 2 else 0.0
+                waypoints.append((x, y))
+                #if (i>=4000):
+                #	break
             	
     return waypoints
 
@@ -44,9 +45,15 @@ def main():
     rospy.init_node('path_publisher', anonymous=True)
     path_pub = rospy.Publisher('/gps_path', Path, queue_size=10)
 
+    if len(sys.argv) < 2:
+        rospy.logerr("No file name provided. Taking default csv file")
+        filename = 'wps'
+    else:
+        filename = sys.argv[1]
+        
     rospack = rospkg.RosPack()
     ros_path = rospack.get_path('path_tracking')
-    file_path = ros_path + "/waypoints/wps.csv"  # Path to your CSV file
+    file_path = f"{ros_path}/waypoints/{filename}.csv"
 
     waypoints = read_csv(file_path)
     rospy.loginfo(f"Loaded {len(waypoints)} waypoints")

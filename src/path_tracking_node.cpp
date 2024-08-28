@@ -5,6 +5,8 @@
 #include <tf/tf.h>                          //for robot yaw 
 #include <cmath>                            //for M_PI
 #include <visualization_msgs/Marker.h>      //for visualizing state of the robot 
+#include <dynamic_reconfigure/server.h>     //for changing params on runtime
+#include <path_tracking/PathTrackingConfig.h>
 
 // Base class for Path Tracking Controllers
 class PathTrackingController {
@@ -138,6 +140,11 @@ public:
     double goal_tolerance;
     std::string controller_type_str;
 
+    // Dynamic reconfigure server
+    dynamic_reconfigure::Server<path_tracking::PathTrackingConfig> dynamic_reconfigure_server_;
+    dynamic_reconfigure::Server<path_tracking::PathTrackingConfig>::CallbackType dynamic_reconfigure_callback_;
+
+
     //Function that checks whether the robot has reached near the final path point
     bool isGoalReached(const geometry_msgs::PoseStamped &current_pose)
     {
@@ -195,7 +202,9 @@ public:
         nh_.param("goal_tolerance", goal_tolerance, 6.0);
         nh_.param("controller_type", controller_type_str, std::string("PURE_PURSUIT"));
 
-        
+        // Dynamic reconfigure server setup
+        dynamic_reconfigure_callback_ = boost::bind(&PathTrackingNode::reconfigureCallback, this, _1, _2);
+        dynamic_reconfigure_server_.setCallback(dynamic_reconfigure_callback_);
 
         // Initialize the chosen path tracking controller (can extend with other types)
 
@@ -210,6 +219,16 @@ public:
         
         
     }
+
+    // Dynamic Reconfigure callback function
+    void reconfigureCallback(path_tracking::PathTrackingConfig &config, uint32_t level) {
+        lookahead_distance_ = config.lookahead_distance;
+        vehicle_speed_ = config.vehicle_speed;
+        goal_tolerance = config.goal_tolerance;
+        ROS_INFO("Reconfigure Request: lookahead_distance = %f, vehicle_speed = %f, goal_tolerance = %f",
+                 lookahead_distance_, vehicle_speed_, goal_tolerance);
+    }
+
 
     //Input path callback function. Switches the machine state to TRACKING if a valid path is found and switches to ERROR for an invalid path
     void pathCallback(const nav_msgs::Path::ConstPtr& path_msg) {
