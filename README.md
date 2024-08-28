@@ -36,11 +36,14 @@ This repository contains the implementation of a path tracking system using the 
   $ source devel/setup.bash
   ```
 
-- Use the given launch file to launch the simulation along with path tracking node, tf publisher node, and Rviz. Around 5 -10 seconds after the simulation, a default path will be published for the robot to follow:
+- Use the given launch file to launch the simulation along with path tracking node, tf publisher node, and Rviz. Around 5 seconds after the simulation launches, a default path will be published for the robot to follow:
 
   ```bash
   $ roslaunch path_tracking path_tracking_sim.launch
   ```
+### Docker Setup
+- Build using the given Dockerfile and use the docker_run.sh script for Linux systems.  
+- For Windows, use the same Dockerfile and additionally install Xserver for remote display
 
 ## ToDo List
 - [x] Implement Pure Pursuit Controller
