@@ -45,12 +45,8 @@ def main():
     rospy.init_node('path_publisher', anonymous=True)
     path_pub = rospy.Publisher('/gps_path', Path, queue_size=10)
 
-    if len(sys.argv) < 2:
-        rospy.logerr("No file name provided. Taking default csv file")
-        filename = 'wps'
-    else:
-        filename = sys.argv[1]
-        
+    filename = rospy.get_param('~path_filename', 'wps')
+
     rospack = rospkg.RosPack()
     ros_path = rospack.get_path('path_tracking')
     file_path = f"{ros_path}/waypoints/{filename}.csv"

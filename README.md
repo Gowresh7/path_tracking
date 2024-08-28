@@ -34,7 +34,7 @@ This repository contains the implementation of a path tracking system using the 
   $ source devel/setup.bash
   ```
 
-- Use the given launch file to launch the simulation along with path tracking node, tf publisher node, and Rviz:
+- Use the given launch file to launch the simulation along with path tracking node, tf publisher node, and Rviz. Around 5 -10 seconds after the simulation, a default path will be published for the robot to follow:
 
   ```bash
   $ roslaunch path_tracking path_tracking_sim.launch
@@ -97,18 +97,22 @@ Where:
 ## Design Choices
 
 ### Pure Pursuit Algorithm
-    - For the initial implementation, the Pure Pursuit Algorithm was chosen for its relatively simple logic, which calculates the steering angle based on a lookahead point on the input path.
+- For the initial implementation, the Pure Pursuit Algorithm was chosen for its relatively simple logic, which calculates the steering angle based on a lookahead point on the input path.
 
 ### Modular Design
-    - Considering the future implementations of other controller algorithms like Stanley, MPC, etc., a modular architecture was followed to develop the code. This allows for easy implementation and integration of the different path tracking controllers. The **'PathTrackingController'** base class ensures that any derived controller can implement the **'computeControl'** function using the robot's odometry, path, and other parameters as input to output the necessary control commands.
+- Considering the future implementations of other controller algorithms like Stanley, MPC, etc., a modular architecture was followed to develop the code. This allows for easy implementation and integration of the different path tracking controllers. The **'PathTrackingController'** base class ensures that any derived controller can implement the **'computeControl'** function using the robot's odometry, path, and other parameters as input to output the necessary control commands.
 
 ### State Management
-    - To better manage the robot's behavior at various stages, an enumerated State was used to manage the robot's current state (IDLE, TRACKING, GOAL_REACHED, ERROR). This design allows the system to react appropriately based on the robot's progress along the path, handle errors gracefully, and stop the robot when the goal is reached.
+- To better manage the robot's behavior at various stages, an enumerated State was used to manage the robot's current state (IDLE, TRACKING, GOAL_REACHED, ERROR). This design allows the system to react appropriately based on the robot's progress along the path, handle errors gracefully, and stop the robot when the goal is reached.
 
 ### Dynamic Reconfigure & ROS Parameters
-    - Parameters such as **'lookahead_distance'**, **'vehicle_speed'**, **'wheelbase'**, and **'controller_type'** are loaded through ROS parameters, making it easy to tune the system for different robots and environments without modifying the code.
-    - Additionally **'lookahead_distance'**, **'vehicle_speed'**, **'goal_tolerance'** and **'steering_limits'** are exposed thorugh the dynamic reconfigure servers to enable parameter tuning during runtime
+- Parameters such as **'lookahead_distance'**, **'vehicle_speed'**, **'wheelbase'**, and **'controller_type'** are loaded through ROS parameters, making it easy to tune the system for different robots and environments without modifying the code.
+- Additionally **'lookahead_distance'**, **'vehicle_speed'**, **'goal_tolerance'** and **'steering_limits'** are exposed thorugh the dynamic reconfigure servers to enable parameter tuning during runtime
 
 ### Visualization
-    - In order to showcase the current state of the robot at various stages of its behavior, **visualization markers** are published and can be viewed in Rviz.
-    - The predicted trajectory, based on the calculated steering angle is published as a path to visualize in Rviz.
+- In order to showcase the current state of the robot at various stages of its behavior, **visualization markers** are published and can be viewed in Rviz.
+- The predicted trajectory, based on the calculated steering angle is published as a path to visualize in Rviz.
+
+### Additional ROS Nodes
+- To enable better visualization in Rviz, a python node was created to provide transformations between */world* frame and */base_footprint* frame based on odometry data
+- Another python node was created to publish various path messages as input to the Controller.
