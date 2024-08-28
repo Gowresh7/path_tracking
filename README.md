@@ -78,36 +78,37 @@ Where:
         - The main ROS node that handles subscribing to necessary topics, publishing control commands, and managing the state of the robot.
 
 ### ROS Topics & Params
+- The system is designed to interact with the robot and environment through ROS topics:
 
-The system is designed to interact with the robot and environment through ROS topics:
+    - #### Subscribed Topics:
+        - **/gps_path**: Input Path of type **nav_msgs::Path** in 'world' frame for the robot to follow.
+        - **/gem/base_footprint/odom**: Odometry data given by the gazebo simulator in 'world' frame.
 
-#### Subscribed Topics:
-- **/gps_path**: Input Path of type **nav_msgs::Path** in 'world' frame for the robot to follow.
-- **/gem/base_footprint/odom**: Odometry data given by the gazebo simulator in 'world' frame.
+    - #### Published Topics:
+        - **/gem/ackermann_cmd**: Control data of type **ackermann_msgs::AckermannDrive** to send speed and steering angle to the robot.
+        - **/state_marker**: Visualization marker of type **visualization_msgs::Marker** to showcase the robot's current state.
 
-#### Published Topics:
-- **/gem/ackermann_cmd**: Control data of type **ackermann_msgs::AckermannDrive** to send speed and steering angle to the robot.
-- **/state_marker**: Visualization marker of type **visualization_msgs::Marker** to showcase the robot's current state.
-
-#### Params:
-- **lookahead_distance**: Determines how far ahead the robot looks on the path to calculate the steering angle. Default is 6.0 meters.
-- **vehicle_speed**: The speed at which the robot should travel while tracking the path. Default is 2.8 meters/second.
-- **wheelbase**: The distance between the front and rear axles of the robot. Default is 1.75 meters.
-- **controller_type**: Specifies the type of controller to use. Currently defaults to "PURE_PURSUIT".
+    - #### Params:
+        - **lookahead_distance**: Determines how far ahead the robot looks on the path to calculate the steering angle. Default is 6.0 meters.
+        - **vehicle_speed**: The speed at which the robot should travel while tracking the path. Default is 2.8 meters/second.
+        - **wheelbase**: The distance between the front and rear axles of the robot. Default is 1.75 meters.
+        - **controller_type**: Specifies the type of controller to use. Currently defaults to "PURE_PURSUIT".
 
 ## Design Choices
 
 ### Pure Pursuit Algorithm
-For the initial implementation, the Pure Pursuit Algorithm was chosen for its relatively simple logic, which calculates the steering angle based on a lookahead point on the input path.
+    - For the initial implementation, the Pure Pursuit Algorithm was chosen for its relatively simple logic, which calculates the steering angle based on a lookahead point on the input path.
 
 ### Modular Design
-Considering the future implementations of other controller algorithms like Stanley, MPC, etc., a modular architecture was followed to develop the code. This allows for easy implementation and integration of the different path tracking controllers. The **'PathTrackingController'** base class ensures that any derived controller can implement the **'computeControl'** function using the robot's odometry, path, and other parameters as input to output the necessary control commands.
+    - Considering the future implementations of other controller algorithms like Stanley, MPC, etc., a modular architecture was followed to develop the code. This allows for easy implementation and integration of the different path tracking controllers. The **'PathTrackingController'** base class ensures that any derived controller can implement the **'computeControl'** function using the robot's odometry, path, and other parameters as input to output the necessary control commands.
 
 ### State Management
-To better manage the robot's behavior at various stages, an enumerated State was used to manage the robot's current state (IDLE, TRACKING, GOAL_REACHED, ERROR). This design allows the system to react appropriately based on the robot's progress along the path, handle errors gracefully, and stop the robot when the goal is reached.
+    - To better manage the robot's behavior at various stages, an enumerated State was used to manage the robot's current state (IDLE, TRACKING, GOAL_REACHED, ERROR). This design allows the system to react appropriately based on the robot's progress along the path, handle errors gracefully, and stop the robot when the goal is reached.
 
-### ROS Parameters
-Parameters such as **'lookahead_distance'**, **'vehicle_speed'**, **'wheelbase'**, and **'controller_type'** are loaded through ROS parameters, making it easy to tune the system for different robots and environments without modifying the code.
+### Dynamic Reconfigure & ROS Parameters
+    - Parameters such as **'lookahead_distance'**, **'vehicle_speed'**, **'wheelbase'**, and **'controller_type'** are loaded through ROS parameters, making it easy to tune the system for different robots and environments without modifying the code.
+    - Additionally **'lookahead_distance'**, **'vehicle_speed'**, **'goal_tolerance'** and **'steering_limits'** are exposed thorugh the dynamic reconfigure servers to enable parameter tuning during runtime
 
 ### Visualization
-In order to showcase the current state of the robot at various stages of its behavior, **visualization markers** are published and can be viewed in Rviz.
+    - In order to showcase the current state of the robot at various stages of its behavior, **visualization markers** are published and can be viewed in Rviz.
+    - The predicted trajectory, based on the calculated steering angle is published as a path to visualize in Rviz.

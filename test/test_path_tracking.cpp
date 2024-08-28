@@ -149,6 +149,7 @@ TEST_F(PathTrackingNodeTest, TestSteeringAngleStraight) {
     geometry_msgs::PoseStamped lookahead_point;
     double lookahead_distance = 5.0;
     double wheelbase = 1.75;
+    double steering_limit = 0.61;
     
     // Simulate a straight path
     current_pose.pose.position.x = 0.0;
@@ -159,7 +160,7 @@ TEST_F(PathTrackingNodeTest, TestSteeringAngleStraight) {
     lookahead_point.pose.position.y = 0.0;
 
     PurePursuitController controller;
-    double steering_angle = controller.computeSteeringAngle(current_pose, lookahead_point, lookahead_distance, wheelbase);
+    double steering_angle = controller.computeSteeringAngle(current_pose, lookahead_point, lookahead_distance, wheelbase, steering_limit);
     
     EXPECT_NEAR(steering_angle, 0.0, 0.01);
 }
@@ -172,6 +173,7 @@ TEST_F(PathTrackingNodeTest, TestSteeringTurn) {
     geometry_msgs::PoseStamped lookahead_point;
     double lookahead_distance = 5.0;
     double wheelbase = 1.75;
+    double steering_limit = 0.61;
     
     // Simulate a sharp turn
     current_pose.pose.position.x = 0.0;
@@ -182,7 +184,7 @@ TEST_F(PathTrackingNodeTest, TestSteeringTurn) {
     lookahead_point.pose.position.y = 3.0;
 
     PurePursuitController controller;
-    double steering_angle = controller.computeSteeringAngle(current_pose, lookahead_point, lookahead_distance, wheelbase);
+    double steering_angle = controller.computeSteeringAngle(current_pose, lookahead_point, lookahead_distance, wheelbase, steering_limit);
     
     EXPECT_TRUE(steering_angle > 0);
     EXPECT_LE(steering_angle, 0.61);

@@ -12,7 +12,7 @@
 class PathTrackingController {
 public:
     //Virtual function that can be used by any sub classes
-    virtual void computeControl(const nav_msgs::Odometry& odom, ackermann_msgs::AckermannDrive& cmd_vel, const nav_msgs::Path& path, const geometry_msgs::PoseStamped& current_pose, double lookahead_distance, double wheelbase, double vehicle_speed) = 0;
+    virtual void computeControl(const nav_msgs::Odometry& odom, ackermann_msgs::AckermannDrive& cmd_vel, const nav_msgs::Path& path, const geometry_msgs::PoseStamped& current_pose, double lookahead_distance, double wheelbase, double vehicle_speed, double steering_limit) = 0;
     virtual ~PathTrackingController() = default;
 };
                                                 //####################################################################
@@ -21,13 +21,13 @@ public:
 class PurePursuitController : public PathTrackingController {
 public:
     //Implementation of the virtual control for Pure Pursuit Controller
-    void computeControl(const nav_msgs::Odometry& odom, ackermann_msgs::AckermannDrive& cmd_vel, const nav_msgs::Path& path, const geometry_msgs::PoseStamped& current_pose, double lookahead_distance, double wheelbase, double vehicle_speed) override {
+    void computeControl(const nav_msgs::Odometry& odom, ackermann_msgs::AckermannDrive& cmd_vel, const nav_msgs::Path& path, const geometry_msgs::PoseStamped& current_pose, double lookahead_distance, double wheelbase, double vehicle_speed, double steering_limit) override {
 
         //get the next point in the input path to travel to
         geometry_msgs::PoseStamped lookahead_point = getLookaheadPoint(path, current_pose, lookahead_distance);
 
         //get the steering angle required to reach the lookahead point
-        double steering_angle = computeSteeringAngle(current_pose, lookahead_point, lookahead_distance, wheelbase);
+        double steering_angle = computeSteeringAngle(current_pose, lookahead_point, lookahead_distance, wheelbase, steering_limit);
 
         //poulate the steering angle and specified speed in the AckermannDrive message
         cmd_vel.speed = vehicle_speed;
@@ -78,7 +78,7 @@ public:
 
 
     //Function to calculate the required steering angle, based on the selected lookahead point
-     double computeSteeringAngle(const geometry_msgs::PoseStamped &current_pose, const geometry_msgs::PoseStamped &lookahead_point, double lookahead_distance, double wheelbase)
+     double computeSteeringAngle(const geometry_msgs::PoseStamped &current_pose, const geometry_msgs::PoseStamped &lookahead_point, double lookahead_distance, double wheelbase, double steering_limit)
     {
         double dx = lookahead_point.pose.position.x - current_pose.pose.position.x;
         double dy = lookahead_point.pose.position.y - current_pose.pose.position.y;
@@ -98,7 +98,7 @@ public:
         double steering_angle = std::atan2(2 * wheelbase * transformed_y, distance * distance);
 
         //restrict the steering angle within a range (taken as reference from GEM Simulator)
-        steering_angle = std::max(-0.61, std::min(steering_angle, 0.61));
+        steering_angle = std::max(-steering_limit, std::min(steering_angle, steering_limit));
         //ROS_INFO("%f, %f", lookahead_point.pose.position.x, lookahead_point.pose.position.y);
         return steering_angle;  //return the steering angle 
     }
@@ -137,7 +137,8 @@ public:
     double lookahead_distance_;             
     double vehicle_speed_;
     double wheelbase_;
-    double goal_tolerance;
+    double goal_tolerance_;
+    double steering_limit_;
     std::string controller_type_str;
 
     // Dynamic reconfigure server
@@ -153,7 +154,7 @@ public:
         double dy = path_.poses.back().pose.position.y - current_pose.pose.position.y;
         double distance_to_goal = std::sqrt(dx * dx + dy * dy);
 
-        return distance_to_goal < goal_tolerance;  // Goal is considered reached if within the tolerance
+        return distance_to_goal < goal_tolerance_;  // Goal is considered reached if within the tolerance
     }
 
     //Function to generate the predicted path the robot will take
@@ -199,7 +200,8 @@ public:
         nh_.param("lookahead_distance", lookahead_distance_, 6.0);  // default value 6.0
         nh_.param("vehicle_speed", vehicle_speed_, 2.8);            // default value 2.8
         nh_.param("wheelbase", wheelbase_, 1.75);                   // default value 1.75
-        nh_.param("goal_tolerance", goal_tolerance, 6.0);
+        nh_.param("goal_tolerance", goal_tolerance_, 6.0);           // default value 6.0
+        nh_.param("steering_limit", steering_limit_, 0.61);          // default 0.61
         nh_.param("controller_type", controller_type_str, std::string("PURE_PURSUIT"));
 
         // Dynamic reconfigure server setup
@@ -224,9 +226,10 @@ public:
     void reconfigureCallback(path_tracking::PathTrackingConfig &config, uint32_t level) {
         lookahead_distance_ = config.lookahead_distance;
         vehicle_speed_ = config.vehicle_speed;
-        goal_tolerance = config.goal_tolerance;
-        ROS_INFO("Reconfigure Request: lookahead_distance = %f, vehicle_speed = %f, goal_tolerance = %f",
-                 lookahead_distance_, vehicle_speed_, goal_tolerance);
+        goal_tolerance_ = config.goal_tolerance;
+        steering_limit_ = config.steering_limit;
+        ROS_INFO("Reconfigure Request: lookahead_distance = %f, vehicle_speed = %f, goal_tolerance = %f, steering_limit = %f", 
+                 lookahead_distance_, vehicle_speed_, goal_tolerance_, steering_limit_);
     }
 
 
@@ -301,7 +304,7 @@ public:
 
             case State::TRACKING:
                 //Compute the steering angles with the given data and publish the ackermann commands
-                controller_->computeControl(odom_, cmd_vel_msg, path_, current_pose_,lookahead_distance_, wheelbase_, vehicle_speed_);
+                controller_->computeControl(odom_, cmd_vel_msg, path_, current_pose_,lookahead_distance_, wheelbase_, vehicle_speed_, steering_limit_);
                 cmd_vel_pub_.publish(cmd_vel_msg);
 
                 // Generate and publish the predicted trajectory
