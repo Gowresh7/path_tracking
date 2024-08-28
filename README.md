@@ -36,9 +36,9 @@ This repository contains the implementation of a path tracking system using the 
 
 - Use the given launch file to launch the simulation along with path tracking node, tf publisher node, and Rviz:
 
-  \`\`\`bash
+  ```bash
   $ roslaunch path_tracking path_tracking_sim.launch
-  \`\`\`
+  ```
 
 ## ToDo List
 - [x] Implement Pure Pursuit Controller
@@ -66,16 +66,16 @@ Where:
 ## System Architecture
 
 ### High-Level Architecture
-The path tracking system is built around three main components:
+- The path tracking system is built around three main components:
 
-#### PathTrackingController Base Class: 
-An abstract base class that defines the interface for any path-tracking controller.
+    - #### PathTrackingController Base Class: 
+        - An abstract base class that defines the interface for any path-tracking controller.
 
-#### PurePursuitController Derived Class: 
-A specific implementation of the path-tracking controller using the Pure Pursuit algorithm.
+    - #### PurePursuitController Derived Class: 
+        - A specific implementation of the path-tracking controller using the Pure Pursuit algorithm.
 
-#### PathTrackingNode Class: 
-The main ROS node that handles subscribing to necessary topics, publishing control commands, and managing the state of the robot.
+    - #### PathTrackingNode Class: 
+        - The main ROS node that handles subscribing to necessary topics, publishing control commands, and managing the state of the robot.
 
 ### ROS Topics & Params
 
