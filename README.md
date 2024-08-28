@@ -26,13 +26,13 @@ This repository contains the implementation of a path tracking system using the 
 ## Setup
 - Assuming the same workspace as used by the Polaris GEM e2 Simulator, clone the repository in the workspace and compile:
 
-  \`\`\`bash
+  ```bash
   $ cd ~/gem_ws/src
   $ git clone https://github.com/Gowresh7/path_tracking.git
   $ cd ~/gem_ws
   $ catkin_make
   $ source devel/setup.bash
-  \`\`\`
+  ```
 
 - Use the given launch file to launch the simulation along with path tracking node, tf publisher node, and Rviz:
 
