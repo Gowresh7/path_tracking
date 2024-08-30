@@ -6,6 +6,8 @@ This repository contains the implementation of a path tracking system using the 
 
     ![Pure Pursuit Controller](https://raw.githubusercontent.com/Gowresh7/path_tracking/main/docs/PathTracking.gif)
 
+- Lane Centered Pure Pursuit
+
 ## Limitations
 - The current implementation does not accommodate reverse motions.
 - Sharp turns and U-turns require tuning of the parameters like lookahead distance and speed. This will be considered when adding lane centering.
